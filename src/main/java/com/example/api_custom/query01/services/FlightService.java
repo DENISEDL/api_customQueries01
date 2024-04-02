@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -15,11 +16,45 @@ public class FlightService {
     @Autowired
     private FlightRepository flightRepository;
 
-    /**
-     * Generiamo 50 voli in random con enumStatus"ONETIME"
-     * salviamo i voli nel database
-     * @return la lista di voli
-     */
+    //     C
+    public Flight addFlight(Flight flight){
+        return flightRepository.save(flight);
+    }
+
+    //     R
+    public List<Flight> getAllFlight(){
+        return flightRepository.findAll();
+    }
+
+    public Optional<Flight> findById(Long id){
+       return flightRepository.findById(id);
+    }
+
+    //    U
+
+    public Optional<Flight> updateFlight(Flight flight,Long id){
+        Optional<Flight> updateFlight = flightRepository.findById(id);
+        if(updateFlight.isPresent()){
+            updateFlight.get().setDescription(flight.getDescription());
+            updateFlight.get().setFromAirport(flight.getFromAirport());
+            updateFlight.get().setStatusEnum(flight.getStatusEnum());
+            updateFlight.get().setToAirport(flight.getToAirport());
+            Flight flightUp = flightRepository.save(updateFlight.get());
+            return Optional.of(flightUp);
+        }
+        return Optional.empty();
+    }
+    //       D
+    public Optional<Flight> deleteFlight(Long id){
+        Optional<Flight> delete = flightRepository.findById(id);
+        if(delete.isPresent()){
+            flightRepository.delete(delete.get());
+        } else {
+            return Optional.empty();
+        }
+        return delete;
+    }
+
     public List<Flight> generateFlights() {
         List<Flight> flights = new ArrayList<>();
         Random random = new Random();
@@ -33,5 +68,54 @@ public class FlightService {
             flightRepository.saveAndFlush(flight);
         }
         return flights;
+    }
+    public List<Flight> findByDescription(String descripton){
+        List<Flight> list = flightRepository.findByDescription(descripton);
+        for (Flight flight: list) {
+            Flight flights = new Flight();
+            flights.setDescription(flight.getDescription());
+            flights.setToAirport(flight.getToAirport());
+            flights.setStatusEnum(flight.getStatusEnum());
+            flights.setFromAirport(flight.getFromAirport());
+            list.add(flights);
+
+        }
+        return list;
+    }
+    public List<Flight> findByToAirport(String toAirport){
+        List<Flight> listToAirport = flightRepository.findByToAirport(toAirport);
+        for(Flight flight : listToAirport){
+            Flight flights = new Flight();
+            flights.setDescription(flight.getDescription());
+            flights.setToAirport(flight.getToAirport());
+            flights.setStatusEnum(flight.getStatusEnum());
+            flights.setFromAirport(flight.getFromAirport());
+            listToAirport.add(flights);
+        }
+        return listToAirport;
+    }
+    public List<Flight> findByFromAirport(String fromAirport){
+        List<Flight> listFromAirport = flightRepository.findByFromAirport(fromAirport);
+        for(Flight flight : listFromAirport){
+            Flight flights = new Flight();
+            flights.setDescription(flight.getDescription());
+            flights.setToAirport(flight.getToAirport());
+            flights.setStatusEnum(flight.getStatusEnum());
+            flights.setFromAirport(flight.getFromAirport());
+            listFromAirport.add(flights);
+        }
+        return listFromAirport;
+    }
+    public List<Flight> findByEnum(Enum statusEnum){
+        List<Flight> liststatusEnum = flightRepository.findByFromAirport(String.valueOf(statusEnum));
+        for(Flight flight : liststatusEnum){
+            Flight flights = new Flight();
+            flights.setDescription(flight.getDescription());
+            flights.setToAirport(flight.getToAirport());
+            flights.setStatusEnum(flight.getStatusEnum());
+            flights.setFromAirport(flight.getFromAirport());
+            liststatusEnum.add(flights);
+        }
+        return liststatusEnum;
     }
 }
